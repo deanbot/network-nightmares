@@ -1,8 +1,8 @@
-﻿package engine
+package engine
 {
 	import com.greensock.TweenLite;
 	import com.greensock.easing.Linear;
-	
+
 	import flash.display.MovieClip;
 	import flash.display.Sprite;
 	import flash.events.Event;
@@ -10,9 +10,9 @@
 	import flash.geom.Point;
 	import flash.utils.Dictionary;
 	import flash.utils.Timer;
-	
+
 	import net.deanverleger.utils.IDestroyable;
-	
+
 	import org.osflash.signals.Signal;
 	import org.osflash.signals.natives.NativeSignal;
 
@@ -23,7 +23,7 @@
 		private var _container:Sprite;
 		private var _port_mc:MovieClip;
 		private var _admin:NetworkAdmin;
-		
+
 		private var _segments:Dictionary;
 		private var _segmentHitIndex:Dictionary;
 		private var _segmentHandMCIndex:Dictionary;
@@ -33,17 +33,17 @@
 		private var _infectedNodes:Dictionary;
 		private var _infectedArms:Array;
 		private var _numInfectedNodes:uint;
-		
+
 		private var _portInfectTimer:Timer;
 		private var _adminRemoved:NativeSignal;
 		private var _portInfectDelay:NativeSignal;
-		
+
 		private var _nodeInfected:Signal;
 		private var _nodeCleaned:Signal;
 		private var _portCompletelyInfected:Signal;
 		private var _portDeactivated:Signal;
 		private var _portDestroyed:Signal;
-		
+
 	// public properties:
 	// constructor:
 		public function NetworkPort(container:Sprite, port_mc:MovieClip)
@@ -63,7 +63,7 @@
 			_portCompletelyInfected = new Signal();
 			_portDestroyed=new Signal();
 		}
-		
+
 	// public getter/setters:
 
 		public function get segments():Dictionary
@@ -75,42 +75,42 @@
 		{
 			return _nodeInfected;
 		}
-		
+
 		public function get nodeCleaned():Signal
 		{
 			return _nodeCleaned;
 		}
-		
+
 		public function get portCompletelyInfected():Signal
 		{
 			return _portCompletelyInfected;
 		}
-		
+
 		public function get portDeactivated():Signal
 		{
 			return _portDeactivated;
 		}
-		
+
 		public function get portDestroyed():Signal
 		{
 			return _portDestroyed;
 		}
-		
+
 		public function get infectedNodes():Dictionary
 		{
 			return _infectedNodes;
 		}
-		
+
 		public function get numNodes():uint
 		{
 			return _hands.length + _fingers.length;
 		}
-		
+
 		public function get numInfectedNodes():uint
 		{
 			return _numInfectedNodes;
 		}
-		
+
 	// public methods:
 		public function addHand(points:Array, hand_mc:MovieClip):void
 		{
@@ -119,13 +119,13 @@
 			var segment:NodeSegment = new NodeSegment();
 			var node_hit_sp:Sprite = hand_mc["hit"] as Sprite;
 			segment.setData(key, points, hand_mc, node_hit_sp, NodeSegmentType.HAND);
-			_segments[key] = segment; 
+			_segments[key] = segment;
 			_segmentHitIndex[node_hit_sp] = key;
 			_segmentHandMCIndex[hand_mc] = key;
 			_hands.push(key);
 			node_hit_sp.visible=false;
 		}
-		
+
 		public function addFinger(points:Array, finger_mc:MovieClip, hand_mc:MovieClip):void
 		{
 			var handKey:String = _segmentHandMCIndex[hand_mc];
@@ -142,7 +142,7 @@
 			handSegment.addSegmentChild(key);
 			node_hit_sp.visible=false;
 		}
-		
+
 		public function activate():void
 		{
 			if(_hands.length==0)
@@ -157,7 +157,7 @@
 			pickRoute();
 			moveTo(nextPoint());
 		}
-		
+
 		public function infectNode(segmentID:String):void
 		{
 			if(_segments[segmentID] == null)
@@ -191,17 +191,17 @@
 				_nodeInfected.dispatch(this, segmentID);
 			}
 		}
-		
+
 		public function nodeIsInfected(node_hit_sp:Sprite):Boolean
 		{
 			return (_infectedNodes[ _segmentHitIndex[node_hit_sp] ] != null);
 		}
-		
+
 		public function get isActivated():Boolean
 		{
 			return (_admin == null) ? false : _admin.activated;
 		}
-		
+
 		public function completelyInfectPort():void
 		{
 			if(_numInfectedNodes!=numNodes)
@@ -215,7 +215,7 @@
 			_admin.deathFinished.addOnce(onAdminDeath);
 			_admin.setState(NetworkAdminState.DEAD);
 		}
-		
+
 		public function deactivate():void
 		{
 			if(_admin==null)
@@ -225,7 +225,7 @@
 			_admin.activated = false;
 			TweenLite.killTweensOf(_admin);
 		}
-		
+
 		public function destroy():void
 		{
 			if(_portDestroyed==null)
@@ -248,14 +248,14 @@
 			_nodeInfected = _portCompletelyInfected = null;
 			if(_admin!=null)
 			{
-				if(_container.contains(_admin)) 
+				if(_container.contains(_admin))
 				{
 					_adminRemoved=new NativeSignal(_admin, Event.ADDED_TO_STAGE, Event);
-					_adminRemoved.addOnce(function(e:Event):void { 
+					_adminRemoved.addOnce(function(e:Event):void {
 						_adminRemoved=null;
-						_admin.destroy(); 
+						_admin.destroy();
 						_admin=null;
-						
+
 					});
 					_container.removeChild(_admin);
 				} else {
@@ -267,11 +267,11 @@
 			_portDestroyed.removeAll();
 			_portDestroyed=null;
 		}
-		
+
 	// private methods:
 		/**
 		 * The admin update loop handles the creation of new routes, beginning of node healing, and movement
-		 * 
+		 *
 		 */
 		private function adminUpdate():void
 		{
@@ -279,11 +279,11 @@
 			if(status==NetworkAdminState.HEALING)
 				return;
 			else if(status==NetworkAdminState.DEAD)
-				return;	
-			trace("admin update");	
-			
+				return;
+			trace("admin update");
+
 			if(_admin.route.length==0)
-			{				
+			{
 				// set new route
 				if(status==NetworkAdminState.ALERT)
 				{
@@ -301,7 +301,7 @@
 									if( _admin.currentFingerIndex != -1)
 										if( _infectedNodes["h"+_admin.currentArmIndex] != null )
 											healingSegmentID = "h"+_admin.currentArmIndex;
-								
+
 							} else
 							{
 								// current node is not infected
@@ -310,7 +310,7 @@
 										if( _infectedNodes["h"+_admin.currentArmIndex] != null )
 											healingSegmentID = "h"+_admin.currentArmIndex;
 							}
-							
+
 							if(healingSegmentID != "")
 							{
 								trace( "healing segment ID: " + healingSegmentID );
@@ -325,14 +325,14 @@
 				}
 				pickRoute();
 			}
-			
+
 			if(_admin.route.length!=0) // movement
 				moveTo(nextPoint());
 			else
 				adminUpdate();
-			
+
 		}
-		
+
 		/**
 		 * based on State of Admin create route
 		 * >May go to arm beginning if at arm end (if alert)
@@ -348,7 +348,7 @@
 			else if(status==NetworkAdminState.DEAD)
 				return;
 			trace("pickRoute");
-			
+
 			var route:Array = new Array();
 			var forwards:Array;
 			var backwards:Array;
@@ -369,7 +369,7 @@
 								_admin.goingToStart = false;
 								if(_hands.length - 1 > _admin.currentArmIndex)
 									_admin.currentArmIndex++;
-								else 
+								else
 									_admin.currentArmIndex = 0;
 								setAtSegment("h" + _admin.currentArmIndex ,true,true);
 							} else {
@@ -398,13 +398,13 @@
 								{
 									// if next finger go to next finger
 									_admin.currentFingerIndex++
-									setAtSegment("h" + _admin.currentArmIndex + "_f" + _admin.currentFingerIndex); 
+									setAtSegment("h" + _admin.currentArmIndex + "_f" + _admin.currentFingerIndex);
 								}
 								else
 								{
 									_admin.goingToStart = true;
 									// go to end of arm
-									setAtSegment("h" + _admin.currentArmIndex, false); 
+									setAtSegment("h" + _admin.currentArmIndex, false);
 								}
 							}
 							else
@@ -412,9 +412,9 @@
 								trace("_admin.rememberFingerIndex not set correctly: " + _admin.rememberFingerIndex);
 							}
 						}
-					} 
+					}
 					else if(atEndOfSegment)
-					{ 
+					{
 						if(_admin.currentFingerIndex == -1)
 						{
 							// on arm
@@ -432,8 +432,8 @@
 							else if (nodeSegment.isHub)
 							{
 								// go to beginning of finger
-								setAtSegment("h" + _admin.currentArmIndex + "_f0"); 
-							} else 
+								setAtSegment("h" + _admin.currentArmIndex + "_f0");
+							} else
 							{
 								_admin.goingToStart = true;
 								trace("_admin doesn't know what to do so he's going back");
@@ -452,8 +452,8 @@
 							backwards.shift();
 							route=backwards;
 						}
-					} 
-					else 
+					}
+					else
 					{
 						// shouldn't be called as with only one admin changing from alert to wander from a point other than the end or beginning of a segment is impossible
 					}
@@ -462,10 +462,10 @@
 				{
 					//admin is between points and this shouldn't be called (as the only way pick route would be called would be if changing from alert to wander or an end point was reached)
 				}
-			} 
+			}
 			else if(status==NetworkAdminState.ALERT)
 			{
-				var infectedArm:uint = getInfectedArm();	
+				var infectedArm:uint = getInfectedArm();
 				var infected:Boolean = false;
 				var i:uint = 0;
 				//if current arm is not infected arm
@@ -480,24 +480,24 @@
 					} else if(_admin.fromPointIndex==0 && _admin.between)
 					{
 						route.push(0);
-					} else if(_admin.currentFingerIndex == -1) 
-					{ 
+					} else if(_admin.currentFingerIndex == -1)
+					{
 						// on arm
 						backwards = indexArray( NodeSegment(_segments["h" + _admin.currentArmIndex]).points.concat() );
 						backwards.reverse();
 						if(_admin.between)
 							index = backwards.indexOf((_admin.destPointIndex>_admin.fromPointIndex)?_admin.destPointIndex:_admin.fromPointIndex);
-						else 
+						else
 							index = backwards.indexOf(_admin.fromPointIndex);
 						route=backwards.splice(index+1,backwards.length-1);
-					} else 
+					} else
 					{
 						// on finger
 						backwards = indexArray( NodeSegment(_segments["h" + _admin.currentArmIndex + "_f" + _admin.currentFingerIndex]).points.concat() );
 						backwards.reverse();
 						if(_admin.between)
 							index = backwards.indexOf((_admin.destPointIndex>_admin.fromPointIndex)?_admin.destPointIndex:_admin.fromPointIndex);
-						else 
+						else
 							index = backwards.indexOf(_admin.fromPointIndex);
 						route=backwards.splice(index+1,backwards.length-1);
 					}
@@ -519,7 +519,7 @@
 								//shouldn't call this
 								trace('should be healing arm. already at end. giving a route containing end anyway');
 								route.push(forwards.length-1);
-							} else 
+							} else
 							{
 								//get first infected child
 								infected = false;
@@ -539,7 +539,7 @@
 									backwards.reverse();
 									backwards.shift();
 									route=backwards;
-									
+
 								} else
 									setAtSegment("h" + _admin.currentArmIndex + "_f" + i);
 							}
@@ -547,7 +547,7 @@
 						{
 							route.push(forwards.length-1);
 						}
-						else 
+						else
 						{
 							if(_admin.between)
 								index = forwards.indexOf((_admin.destPointIndex>_admin.fromPointIndex)?_admin.fromPointIndex:_admin.destPointIndex);
@@ -555,7 +555,7 @@
 								index = forwards.indexOf(_admin.fromPointIndex);
 							route=forwards.splice(index+1,forwards.length-1);
 						}
-						
+
 					}
 					else
 					{
@@ -578,7 +578,7 @@
 									index = forwards.indexOf(_admin.fromPointIndex);
 								route=forwards.splice(index+1,forwards.length-1);
 							}
-						} 
+						}
 						else
 						{
 							//go to arm
@@ -617,7 +617,7 @@
 								backwards.reverse();
 								if(_admin.between)
 									index = backwards.indexOf((_admin.destPointIndex>_admin.fromPointIndex)?_admin.destPointIndex:_admin.fromPointIndex);
-								else 
+								else
 									index = backwards.indexOf(_admin.fromPointIndex);
 								route=backwards.splice(index+1,backwards.length-1);
 							}
@@ -627,13 +627,13 @@
 			}
 			_admin.route=route;
 		}
-		
+
 		/**
 		 * Rotates Admin based on angle between points (doesn't if between)
 		 * begins Movement Tween
 		 * Sets admin values
 		 * @param point
-		 * 
+		 *
 		 */
 		var hmmCount:uint;
 		private function moveTo(pointIndex:uint):void
@@ -669,7 +669,7 @@
 				var from:Point=_arms[_admin.currentArmIndex][_admin.fromPointIndex] as Point;
 			} */
 		}
-		
+
 		private function moveComplete():void
 		{
 			if(_admin==null)
@@ -681,7 +681,7 @@
 			_admin.between=false;
 			adminUpdate();
 		}
-		
+
 		/**
 		 * Positions Admin at first point of segment
 		 */
@@ -714,7 +714,7 @@
 				_admin.goingToStart = false;
 			}
 		}
-		
+
 		/**
 		 * @return next movement pointIndex in route (removes from admin's route)
 		 */
@@ -723,7 +723,7 @@
 			var pointIndex:int = _admin.route.shift();
 			return pointIndex;
 		}
-		
+
 		/**
 		 * @return either the arm the admin is on if that arm is infected or the earliest infected arm
 		 */
@@ -735,7 +735,7 @@
 			// else check if hand is a hub
 				// if so check if any fingers are infected
 			// else give first infectedArm;
-			
+
 			if(_infectedNodes["h"+_admin.currentArmIndex] != null)
 			{
 				arm=_admin.currentArmIndex;
@@ -751,14 +751,14 @@
 				}
 				if(infected)
 					arm=_admin.currentArmIndex;
-				else 
+				else
 					arm=_infectedArms[0];
 			} else {
 				arm=_infectedArms[0];
 			}
 			return arm;
 		}
-		
+
 		private function cleanNode(segmentID:String):void
 		{
 			if(_admin==null)
@@ -773,7 +773,7 @@
 				trace("Segment " + segmentID + " not infected");
 				return;
 			}
-			
+
 			var segment_mc:MovieClip=MovieClip(NodeSegment(_segments[segmentID]).segmentGraphic);
 			if(segment_mc!=null)
 			{
@@ -781,7 +781,7 @@
 				_infectedNodes[segmentID]=null;
 				_numInfectedNodes--;
 				delete _infectedNodes[segmentID];
-				
+
 				var infected:Boolean = false;
 				var nodeSegment:NodeSegment = NodeSegment( _segments["h"+_admin.currentArmIndex] );
 				if(_infectedNodes["h"+_admin.currentArmIndex] != null)
@@ -803,7 +803,7 @@
 				_nodeCleaned.dispatch(this,segmentID);
 			}
 		}
-		
+
 		private function onHealingFinished():void
 		{
 			if(_admin==null)
@@ -823,9 +823,9 @@
 		{
 			_portCompletelyInfected.dispatch();
 		}
-		
+
 		/* Helper Methods */
-		
+
 		private function getDuration(x1,x2,y1,y2){
 			var dx:Number = x1 - x2;
 			var dy:Number = y1 - y2;
@@ -839,7 +839,7 @@
 			//trace("duration: "+duration);
 			return duration;
 		}
-		
+
 		private function indexArray(sourceArray:Array):Array
 		{
 			var array:Array=new Array(sourceArray.length);
@@ -849,24 +849,24 @@
 			}
 			return array;
 		}
-		
+
 		private function armIndex(segmentID:String):uint
 		{
 			return uint(segmentID.substr(1,1));
 		}
-		
+
 		private function fingerIndex(segmentID:String):int
 		{
 			var s:String = segmentID.substr(4,1);
 			var i:int = int(s);
 			return i;
 		}
-		
+
 		private function get atEndOfSegment():Boolean
 		{
 			return (_admin.fromPointIndex == NodeSegment(_segments[_admin.currentSegmentID]).points.length-1);
 		}
-		
+
 		private function clearDictionary(dict:Dictionary):void
 		{
 			for (var k:String in dict)

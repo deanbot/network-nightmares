@@ -1,19 +1,19 @@
-﻿package engine
+package engine
 {
 	import com.meekgeek.statemachines.finite.manager.StateManager;
-	
+
 	import flash.display.Sprite;
 	import flash.events.TimerEvent;
 	import flash.utils.Timer;
-	
+
 	import org.casalib.util.DisplayObjectUtil;
 	import org.osflash.signals.Signal;
 	import org.osflash.signals.natives.NativeSignal;
-	
+
 	/**
-	 * Network Admin is extention of Network Port. Port controlls admin. Admin acts and issues signals once finished. 
+	 * Network Admin is extention of Network Port. Port controlls admin. Admin acts and issues signals once finished.
 	 * @author Dean
-	 * 
+	 *
 	 */
 	public class NetworkAdmin extends Sprite
 	{
@@ -34,7 +34,7 @@
 		private var _alertFinished:Signal;
 		private var _sm:StateManager;
 		private var _deathFinished:Signal;
-		
+
 		private var _healingTimer:Timer;
 		private var _healingTimerComplete:NativeSignal;
 		private var _bg:Sprite;
@@ -60,7 +60,7 @@
 			_healingSegmentID = "";
 			_activated = false;
 		}
-		
+
 		public function get healingSegmentID():String
 		{
 			return _healingSegmentID;
@@ -95,7 +95,7 @@
 		{
 			return _currentFingerIndex;
 		}
-		
+
 		public function set currentFingerIndex(value:int):void
 		{
 			_currentFingerIndex = value;
@@ -110,112 +110,112 @@
 		{
 			return _route;
 		}
-		
+
 		public function set route(value:Array):void
 		{
 			_route=value;
 		}
-		
+
 		public function get currentArmIndex():int
 		{
 			return _currentArmIndex;
 		}
-		
+
 		public function set currentArmIndex(value:int):void
 		{
 			_currentArmIndex = value;
 		}
-		
+
 		public function get currentSegmentID():String
 		{
 			return _currentSegmentID;
 		}
-		
+
 		public function set currentSegmentID(ID:String):void
 		{
 			_currentSegmentID = ID;
 		}
-		
+
 		public function get fromPointIndex():uint
 		{
 			return _fromPointIndex;
 		}
-		
+
 		public function set fromPointIndex(value:uint):void
 		{
 			_fromPointIndex = value;
 		}
-				
+
 		public function get destPointIndex():uint
 		{
 			return _destPointIndex;
 		}
-		
+
 		public function set destPointIndex(value:uint):void
 		{
 			_destPointIndex = value;
 		}
-		
+
 		public function get between():Boolean
 		{
 			return _between;
 		}
-		
+
 		public function set between(value:Boolean):void
 		{
 			_between=value;
 		}
-		
+
 		public function get alerted():Boolean
 		{
 			return _alerted;
 		}
-		
+
 		public function set alerted(value:Boolean):void
 		{
 			_alerted = value;
 		}
-		
+
 		public function get alertFinished():Signal
 		{
 			return _alertFinished;
 		}
-		
+
 		public function get healing():Boolean
 		{
 			return _healing;
 		}
-		
+
 		public function set healing(value:Boolean):void
 		{
 			_healing = value;
 		}
-		
+
 		public function get portHealed():Signal
 		{
 			return _portHealed;
 		}
-		
+
 		public function get status():String
 		{
 			return _sm.currentKey;
 		}
-		
+
 		public function set activated(value:Boolean):void
 		{
 			_activated = value;
 		}
-		
+
 		public function get activated():Boolean
 		{
 			return _activated;
 		}
-		
+
 		public function setState(stateKey:String)
 		{
 			_sm.setState(stateKey);
 		}
-		
+
 		public function beginHealing()
 		{
 			if(!_activated)
@@ -224,7 +224,7 @@
 			_healingTimerComplete.addOnce(onHealingTimerComplete);
 			_healingTimer.start();
 		}
-		
+
 		public function stopHealing()
 		{
 			if(!_activated)
@@ -235,7 +235,7 @@
 			if(_healingTimer.running)
 				_healingTimer.stop();
 		}
-		
+
 		public function destroy()
 		{
 			DisplayObjectUtil.removeAllChildren(this,false,true);
@@ -248,7 +248,7 @@
 			_portHealed=null;
 			_activated = false;
 		}
-		
+
 		private function onHealingTimerComplete(e:TimerEvent):void
 		{
 			stopHealing();
@@ -274,7 +274,7 @@ class AdminWander extends State {
 	{
 		super();
 	}
-	
+
 	override public function doIntro():void
 	{
 		//NetworkSounds.playSound(NetworkSounds.
@@ -283,12 +283,12 @@ class AdminWander extends State {
 		NetworkAdmin(this.context).alerted=false;
 		this.signalIntroComplete();
 	}
-	
+
 	override public function action():void
 	{
-		
+
 	}
-	
+
 	override public function doOutro():void
 	{
 		NetworkAdmin(this.context).removeChild(graphic);
@@ -306,7 +306,7 @@ class AdminAlert extends State {
 	{
 		super();
 	}
-	
+
 	override public function doIntro():void
 	{
 		NetworkAdmin(this.context).addChild(graphic=new AdminAlertSp() as Sprite);
@@ -316,10 +316,10 @@ class AdminAlert extends State {
 			NetworkSounds.playSound(NetworkSounds.ADMIN_ALERT,1);
 			alertTimer=new Timer(ALERT_TIME);
 			alertTimerComplete=new NativeSignal(alertTimer,TimerEvent.TIMER,TimerEvent);
-			alertTimerComplete.addOnce(function(e:TimerEvent):void { 
+			alertTimerComplete.addOnce(function(e:TimerEvent):void {
 				NetworkAdmin(context).alerted=true;
 				NetworkAdmin(context).alertFinished.dispatch();
-				signalIntroComplete(); 
+				signalIntroComplete();
 			});
 			alertTimer.start();
 		} else {
@@ -327,16 +327,16 @@ class AdminAlert extends State {
 			NetworkAdmin(context).alertFinished.dispatch();
 		}
 	}
-	
+
 	override public function action():void
 	{
-		
+
 	}
-	
+
 	override public function doOutro():void
 	{
 		NetworkAdmin(this.context).removeChild(graphic);
-		if(alertTimer!=null) 
+		if(alertTimer!=null)
 		{
 			alertTimer.stop();
 			alertTimerComplete.removeAll();
@@ -354,7 +354,7 @@ class AdminHealing extends State {
 	{
 		super();
 	}
-	
+
 	override public function doIntro():void
 	{
 		NetworkAdmin(this.context).addChild(graphic=new AdminHealingSp() as Sprite);
@@ -362,12 +362,12 @@ class AdminHealing extends State {
 		NetworkAdmin(this.context).beginHealing();
 		this.signalIntroComplete();
 	}
-	
+
 	override public function action():void
 	{
-		
+
 	}
-	
+
 	override public function doOutro():void
 	{
 		if(NetworkAdmin(this.context).contains(graphic))
@@ -387,12 +387,12 @@ class AdminDead extends State {
 	private var blinkInTimer:Timer;
 	private var blinkInTimerLoop:NativeSignal;
 	private var blinkOutTimerLoop:NativeSignal;
-	
+
 	public function AdminDead():void
 	{
 		super();
 	}
-	
+
 	override public function doIntro():void
 	{
 		NetworkAdmin(this.context).addChild(graphic=new AdminDeadSp() as Sprite);
@@ -404,14 +404,14 @@ class AdminDead extends State {
 		blinkInTimerLoop.add(blinkOut);
 		blinkInTimer.start();
 	}
-	
+
 	private function blinkOut(e:TimerEvent):void
 	{
 		blinkInTimer.stop();
 		graphic.visible=false;
 		blinkOutTimer.start();
 	}
-	
+
 	private function blinkIn(e:TimerEvent):void
 	{
 		blinkCounter++;
@@ -422,23 +422,23 @@ class AdminDead extends State {
 		else
 			fadeOut();
 	}
-	
+
 	private function fadeOut():void
 	{
 		TweenLite.to(NetworkAdmin(context),FADE_DURATION,{scaleX:0, scaleY:0, onComplete:onFadeOut});
 	}
-	
+
 	private function onFadeOut():void
 	{
 		this.signalIntroComplete();
 		NetworkAdmin(context).deathFinished.dispatch();
 	}
-	
+
 	override public function action():void
 	{
-		
+
 	}
-	
+
 	override public function doOutro():void
 	{
 		NetworkAdmin(this.context).removeChild(graphic);
