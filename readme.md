@@ -10,6 +10,6 @@ Network Nightmares was a game created as part of a research project in 2012. The
 
 http://fdg2013.org/program/festival/networknightmares.pdf
 
-All artwork was created by [Jackie Crofts](http) Programming and sound design was completed by Dean Verleger.
+All artwork was created by [Jackie Crofts](http) Programming and sound design was completed by [Dean Verleger](https://github.com/deanbot).
 
  IUPUI Center for Teaching and Learning Curricular Enhancement Grant
