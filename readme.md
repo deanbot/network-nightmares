@@ -6,10 +6,8 @@ Code is provided for historical/educational purposes only, the last revision was
 
 ## History
 
-Network Nightmares was a game created as part of a research project in 2012. The game was meant to augment course work exploring network security.
+Network Nightmares was a game created as part of a research project in 2012 and submitted to [fdg2013](http://fdg2013.org/). The game was part of a larger curriculum exploring network security; mastermined by [William Ryan](http://www.williamryanonline.net/). All artwork was created by [Jackie Crofts](http://jackiecrofts.com). Programming and sound design was completed by [Dean Verleger](https://github.com/deanbot).
 
-http://fdg2013.org/program/festival/networknightmares.pdf
+Research paper: http://fdg2013.org/program/festival/networknightmares.pdf
 
-All artwork was created by [Jackie Crofts](http) Programming and sound design was completed by [Dean Verleger](https://github.com/deanbot).
-
- IUPUI Center for Teaching and Learning Curricular Enhancement Grant
+Playable (with Flash Player): http://www.williamryanonline.net/nightmares/
