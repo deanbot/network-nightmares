@@ -2,7 +2,7 @@
 
 ActionScript source code for an arcade game featuring 'angry birds'-style sling-shotting of projectiles at targets and a 'capture all targets before AI can repair them' mechanic.
 
-Code is provided for historical/educational purposes only, the last revision was made in 07/2012.
+Code is provided for historical/educational purposes only - the last revision was made in 07/2012.
 
 ## About
 
