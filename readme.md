@@ -24,4 +24,4 @@ A secondary mechanic deals with the "lives" or available viruses the player has.
 
 ![screenshot](./thumb.png)
 
-Play (with Flash Player) at [networknightmares.dreamfed.net](https://networknightmares.dreamfed.net).
+Play (with Flash Player) at [dreamfed.net/network-nightmares](https://dreamfed.net/network-nightmares).
